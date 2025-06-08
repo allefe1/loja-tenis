@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Login - Loja de Sapatos</title>
+
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <!-- Font Awesome Icon -->
+    <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}">
+
+    <!-- Custom stylesheet -->
+    <link type="text/css" rel="stylesheet" th:href="@{/css/style.css}"/>
+
+    <!-- CSS para footer fixo -->
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .main-content {
+            flex-grow: 1;
+        }
+
+        .footer-fixed {
+            background-color: #15161D;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="main-content">
+    <!-- HEADER SIMPLIFICADO -->
+    <header>
+        <div id="header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <h2 style="color: #D10024; margin: 20px 0;">SapatoShop - Login</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mensagem de sucesso conforme especificado no PDF -->
+    <div th:if="${mensagem}" class="section" style="padding: 20px 0;">
+        <div class="container">
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <span th:text="${mensagem}"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION -->
+    <div class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3">
+                    <div class="billing-details">
+                        <div class="section-title text-center">
+                            <h3 class="title">Login</h3>
+                            <p>Acesse sua conta para continuar comprando</p>
+                        </div>
+
+                        <!-- Erro de login conforme especificado no PDF -->
+                        <div th:if="${error}" class="alert alert-danger">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <span th:text="${error}"></span>
+                        </div>
+
+                        <!-- Formulário de login conforme Questão 12 -->
+                        <form th:action="@{/login}" method="post">
+                            <div class="form-group">
+                                <label>Username *</label>
+                                <input class="input form-control" type="text" name="username"
+                                       placeholder="Digite seu username" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Senha *</label>
+                                <input class="input form-control" type="password" name="password"
+                                       placeholder="Digite sua senha" required>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="primary-btn order-submit">
+                                    <i class="fa fa-sign-in"></i> Entrar
+                                </button>
+                                <a th:href="@{/cadUsuario}" class="btn btn-default">
+                                    <i class="fa fa-user-plus"></i> Criar Conta
+                                </a>
+                            </div>
+                        </form>
+
+                        <div class="text-center" style="margin-top: 20px;">
+                            <p><strong>Usuários de teste:</strong></p>
+                            <p><small>Admin: admin/123456 | User: user/123456</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /SECTION -->
+</div>
+
+<!-- FOOTER FIXO NO FINAL -->
+<footer class="footer-fixed">
+    <div class="container">
+        <p>&copy; 2025 Loja de Sapatos UFRN. Todos os direitos reservados.</p>
+        <p><small>Projeto da disciplina Programação Web</small></p>
+    </div>
+</footer>
+
+<!-- jQuery Plugins -->
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+</body>
+</html>

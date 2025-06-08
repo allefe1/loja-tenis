@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Cadastro de Sapato - Loja de Sapatos</title>
+
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <!-- Font Awesome Icon -->
+    <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}">
+
+    <!-- Custom stylesheet -->
+    <link type="text/css" rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<!-- HEADER -->
+<div th:replace="fragments/header :: header"></div>
+
+<!-- SECTION -->
+<div class="section">
+    <div class="container">
+        <div class="row">
+            <!-- section title -->
+            <div class="col-md-12">
+                <div class="section-title">
+                    <h3 class="title" th:text="${sapato.id != null ? 'Editar Sapato' : 'Cadastrar Novo Sapato'}">
+                        Cadastrar Novo Sapato
+                    </h3>
+                </div>
+            </div>
+            <!-- /section title -->
+
+            <!-- Formulário -->
+            <div class="col-md-8 col-md-offset-2">
+                <div class="billing-details">
+                    <form th:action="@{/salvar}" th:object="${sapato}" method="post">
+                        <input type="hidden" th:field="*{id}">
+                        <input type="hidden" th:field="*{isDeleted}">
+                        <input type="hidden" th:field="*{imageUrl}">
+
+                        <div class="form-group">
+                            <label>Nome do Sapato *</label>
+                            <input class="input form-control" type="text" th:field="*{nome}"
+                                   placeholder="Ex: Sapato Social Masculino">
+                            <span th:if="${#fields.hasErrors('nome')}"
+                                  th:errors="*{nome}" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Marca *</label>
+                            <input class="input form-control" type="text" th:field="*{marca}"
+                                   placeholder="Ex: Nike, Adidas, Democrata">
+                            <span th:if="${#fields.hasErrors('marca')}"
+                                  th:errors="*{marca}" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Preço *</label>
+                                    <input class="input form-control" type="number" step="0.01"
+                                           th:field="*{preco}" placeholder="0.00">
+                                    <span th:if="${#fields.hasErrors('preco')}"
+                                          th:errors="*{preco}" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Tamanho *</label>
+                                    <input class="input form-control" type="number"
+                                           th:field="*{tamanho}" placeholder="Ex: 42">
+                                    <span th:if="${#fields.hasErrors('tamanho')}"
+                                          th:errors="*{tamanho}" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Cor *</label>
+                            <input class="input form-control" type="text" th:field="*{cor}"
+                                   placeholder="Ex: Preto, Marrom, Branco">
+                            <span th:if="${#fields.hasErrors('cor')}"
+                                  th:errors="*{cor}" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Descrição *</label>
+                            <textarea class="input form-control" rows="4" th:field="*{descricao}"
+                                      placeholder="Descreva as características do sapato..."></textarea>
+                            <span th:if="${#fields.hasErrors('descricao')}"
+                                  th:errors="*{descricao}" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="primary-btn order-submit">
+                                    <span th:text="${sapato.id != null ? 'Atualizar Sapato' : 'Cadastrar Sapato'}">
+                                        Cadastrar Sapato
+                                    </span>
+                            </button>
+                            <a th:href="@{/admin}" class="btn btn-default">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- /Formulário -->
+        </div>
+    </div>
+</div>
+<!-- /SECTION -->
+
+<!-- FOOTER -->
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- jQuery Plugins -->
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

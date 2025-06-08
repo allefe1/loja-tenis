@@ -1,0 +1,76 @@
+<div th:fragment="header">
+    <!-- HEADER -->
+    <header>
+        <!-- TOP HEADER -->
+        <div id="top-header">
+            <div class="container">
+                <ul class="header-links pull-left">
+                    <li><a href="#"><i class="fa fa-phone"></i> +55 84 99999-9999</a></li>
+                    <li><a href="#"><i class="fa fa-envelope-o"></i> contato@lojasapatos.com</a></li>
+                    <li><a href="#"><i class="fa fa-map-marker"></i> Natal, RN - Brasil</a></li>
+                </ul>
+                <ul class="header-links pull-right">
+                    <li><a href="#"><i class="fa fa-dollar"></i> BRL</a></li>
+                    <li><a th:href="@{/login}"><i class="fa fa-sign-in"></i> Login</a></li>
+                </ul>
+            </div>
+        </div>
+        <!-- /TOP HEADER -->
+
+        <!-- MAIN HEADER -->
+        <div id="header">
+            <div class="container">
+                <div class="row">
+                    <!-- LOGO -->
+                    <div class="col-md-3">
+                        <div class="header-logo">
+                            <a href="/" class="logo">
+                                <h2 style="color: #D10024; margin: 0; font-weight: bold;">SapatoShop</h2>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- /LOGO -->
+
+                    <!-- ESPAÇO CENTRAL -->
+                    <div class="col-md-6">
+                        <div class="header-search" style="text-align: center; padding-top: 20px;">
+                            <h4 style="color: #2B2D42; margin: 0;">Os Melhores Sapatos do Brasil</h4>
+                            <p style="color: #666; margin: 5px 0 0 0;">Qualidade e conforto em cada passo</p>
+                        </div>
+                    </div>
+                    <!-- /ESPAÇO CENTRAL -->
+
+                    <!-- CART -->
+                    <div class="col-md-3 clearfix">
+                        <div class="header-ctn">
+                            <div>
+                                <a th:href="@{/verCarrinho}">
+                                    <i class="fa fa-shopping-cart"></i>
+                                    <span>Carrinho</span>
+                                    <div class="qty" th:text="${session.carrinho != null ? session.carrinho.size() : 0}">0</div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /CART -->
+                </div>
+            </div>
+        </div>
+        <!-- /MAIN HEADER -->
+    </header>
+    <!-- /HEADER -->
+
+    <!-- NAVIGATION -->
+    <nav id="navigation">
+        <div class="container">
+            <div id="responsive-nav">
+                <ul class="main-nav nav navbar-nav">
+                    <li class="active"><a th:href="@{/}">Home</a></li>
+                    <li><a th:href="@{/admin}">Administração</a></li>
+                    <li><a th:href="@{/cadUsuario}">Cadastrar</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- /NAVIGATION -->
+</div>

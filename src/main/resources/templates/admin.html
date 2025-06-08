@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Administração - Loja de Sapatos</title>
+
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <!-- Font Awesome Icon -->
+    <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}">
+
+    <!-- Custom stylesheet -->
+    <link type="text/css" rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<!-- HEADER -->
+<div th:replace="fragments/header :: header"></div>
+
+<!-- SECTION -->
+<div class="section">
+    <div class="container">
+        <div class="row">
+            <!-- section title -->
+            <div class="col-md-12">
+                <div class="section-title">
+                    <h3 class="title">Administração de Sapatos</h3>
+                    <div class="section-nav">
+                        <a th:href="@{/cadastro}" class="btn btn-primary">
+                            <i class="fa fa-plus"></i> Cadastrar Novo Sapato
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- /section title -->
+
+            <!-- Mensagem de sucesso -->
+            <div th:if="${mensagem}" class="col-md-12">
+                <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <span th:text="${mensagem}"></span>
+                </div>
+            </div>
+
+            <!-- Tabela de Sapatos -->
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Imagem</th>
+                            <th>Nome</th>
+                            <th>Marca</th>
+                            <th>Preço</th>
+                            <th>Cor</th>
+                            <th>Tamanho</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="sapato : ${sapatosList}">
+                            <td th:text="${sapato.id}">1</td>
+                            <td>
+                                <img th:src="${sapato.imageUrl}" alt="Sapato"
+                                     style="width: 50px; height: 50px; object-fit: cover;">
+                            </td>
+                            <td th:text="${sapato.nome}">Nome</td>
+                            <td th:text="${sapato.marca}">Marca</td>
+                            <td th:text="'R$ ' + ${sapato.preco}">R$ 0,00</td>
+                            <td th:text="${sapato.cor}">Cor</td>
+                            <td th:text="${sapato.tamanho}">Tamanho</td>
+                            <td>
+                                        <span th:if="${sapato.isDeleted == null}"
+                                              class="label label-success">Ativo</span>
+                                <span th:if="${sapato.isDeleted != null}"
+                                      class="label label-danger">Deletado</span>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a th:href="@{/editar(id=${sapato.id})}"
+                                       class="btn btn-warning btn-sm">
+                                        <i class="fa fa-edit"></i> Editar
+                                    </a>
+
+                                    <a th:if="${sapato.isDeleted == null}"
+                                       th:href="@{/deletar(id=${sapato.id})}"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Tem certeza que deseja deletar?')">
+                                        <i class="fa fa-trash"></i> Deletar
+                                    </a>
+
+                                    <a th:if="${sapato.isDeleted != null}"
+                                       th:href="@{/restaurar(id=${sapato.id})}"
+                                       class="btn btn-success btn-sm">
+                                        <i class="fa fa-undo"></i> Restaurar
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- /Tabela de Sapatos -->
+        </div>
+    </div>
+</div>
+<!-- /SECTION -->
+
+<!-- FOOTER -->
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- jQuery Plugins -->
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
