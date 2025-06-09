@@ -20,8 +20,8 @@
     <link type="text/css" rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
-<!-- HEADER -->
-<div th:replace="fragments/header :: header"></div>
+<!-- HEADER - Corrigido conforme resultados da busca -->
+<div th:replace="~{fragments/header :: header}"></div>
 
 <!-- SECTION -->
 <div class="section">
@@ -40,19 +40,33 @@
             </div>
             <!-- /section title -->
 
-            <!-- Mensagem de sucesso -->
+            <!-- Mensagem de sucesso conforme Questões 7 e 8 do PDF -->
             <div th:if="${mensagem}" class="col-md-12">
                 <div class="alert alert-success alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <strong><i class="fa fa-check-circle"></i> Sucesso!</strong>
                     <span th:text="${mensagem}"></span>
                 </div>
             </div>
 
-            <!-- Tabela de Sapatos -->
-            <div class="col-md-12">
+            <!-- Mensagem informativa quando não há sapatos -->
+            <div th:if="${#lists.isEmpty(sapatosList)}" class="col-md-12">
+                <div class="alert alert-info text-center">
+                    <h4><i class="fa fa-info-circle"></i> Nenhum sapato encontrado</h4>
+                    <p>Ainda não há sapatos cadastrados no sistema.</p>
+                    <a th:href="@{/cadastro}" class="btn btn-primary">
+                        <i class="fa fa-plus"></i> Cadastrar Primeiro Sapato
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tabela de Sapatos conforme Questão 4 do PDF -->
+            <div th:if="${!#lists.isEmpty(sapatosList)}" class="col-md-12">
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered">
-                        <thead>
+                        <thead class="thead-dark">
                         <tr>
                             <th>ID</th>
                             <th>Imagem</th>
@@ -70,36 +84,47 @@
                             <td th:text="${sapato.id}">1</td>
                             <td>
                                 <img th:src="${sapato.imageUrl}" alt="Sapato"
-                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
                             </td>
                             <td th:text="${sapato.nome}">Nome</td>
                             <td th:text="${sapato.marca}">Marca</td>
-                            <td th:text="'R$ ' + ${sapato.preco}">R$ 0,00</td>
+                            <td th:text="'R$ ' + ${#numbers.formatDecimal(sapato.preco, 1, 2)}">R$ 0,00</td>
                             <td th:text="${sapato.cor}">Cor</td>
                             <td th:text="${sapato.tamanho}">Tamanho</td>
                             <td>
-                                        <span th:if="${sapato.isDeleted == null}"
-                                              class="label label-success">Ativo</span>
+                                <!-- Status conforme Questão 8 - soft delete -->
+                                <span th:if="${sapato.isDeleted == null}"
+                                      class="label label-success">
+                                    <i class="fa fa-check"></i> Ativo
+                                </span>
                                 <span th:if="${sapato.isDeleted != null}"
-                                      class="label label-danger">Deletado</span>
+                                      class="label label-danger">
+                                    <i class="fa fa-times"></i> Deletado
+                                </span>
                             </td>
                             <td>
                                 <div class="btn-group" role="group">
+                                    <!-- Editar conforme Questão 6 -->
                                     <a th:href="@{/editar(id=${sapato.id})}"
-                                       class="btn btn-warning btn-sm">
+                                       class="btn btn-warning btn-sm"
+                                       title="Editar sapato">
                                         <i class="fa fa-edit"></i> Editar
                                     </a>
 
+                                    <!-- Deletar conforme Questão 8 - apenas se ativo -->
                                     <a th:if="${sapato.isDeleted == null}"
                                        th:href="@{/deletar(id=${sapato.id})}"
                                        class="btn btn-danger btn-sm"
-                                       onclick="return confirm('Tem certeza que deseja deletar?')">
+                                       title="Deletar sapato"
+                                       onclick="return confirm('Tem certeza que deseja deletar este sapato?')">
                                         <i class="fa fa-trash"></i> Deletar
                                     </a>
 
+                                    <!-- Restaurar conforme Questão 8 - apenas se deletado -->
                                     <a th:if="${sapato.isDeleted != null}"
                                        th:href="@{/restaurar(id=${sapato.id})}"
-                                       class="btn btn-success btn-sm">
+                                       class="btn btn-success btn-sm"
+                                       title="Restaurar sapato">
                                         <i class="fa fa-undo"></i> Restaurar
                                     </a>
                                 </div>
@@ -108,6 +133,16 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Estatísticas simplificadas - removendo expressões problemáticas -->
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-md-12">
+                        <div class="alert alert-info text-center">
+                            <strong>Total de Sapatos Cadastrados:</strong>
+                            <span th:text="${#lists.size(sapatosList)}">0</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <!-- /Tabela de Sapatos -->
         </div>
@@ -115,12 +150,28 @@
 </div>
 <!-- /SECTION -->
 
-<!-- FOOTER -->
-<div th:replace="fragments/footer :: footer"></div>
+<!-- FOOTER - Corrigido conforme resultados da busca -->
+<div th:replace="~{fragments/footer :: footer}"></div>
 
 <!-- jQuery Plugins -->
 <script th:src="@{/js/jquery.min.js}"></script>
 <script th:src="@{/js/bootstrap.min.js}"></script>
 <script th:src="@{/js/main.js}"></script>
+
+<!-- Script para auto-dismiss dos alertas -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-dismiss alertas após 5 segundos
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(function(alert) {
+                const closeBtn = alert.querySelector('.close');
+                if (closeBtn) {
+                    closeBtn.click();
+                }
+            });
+        }, 5000);
+    });
+</script>
 </body>
 </html>

@@ -2,7 +2,8 @@ package br.ufrn.lojasapatos.controller;
 
 import br.ufrn.lojasapatos.model.Sapato;
 import br.ufrn.lojasapatos.service.SapatoService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,136 +11,224 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
-import java.util.Random;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.WebDataBinder;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Random;
-
-
 import java.util.List;
 
 @Controller
 public class SapatoController {
 
-    @Autowired
-    private SapatoService sapatoService;
+    private static final Logger logger = LoggerFactory.getLogger(SapatoController.class);
+    private final SapatoService sapatoService;
+
+    public SapatoController(SapatoService sapatoService) {
+        this.sapatoService = sapatoService;
+    }
+
+    // SOLUÇÃO: Ignorar campo isDeleted no binding
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.setDisallowedFields("isDeleted");
+    }
+
+    // Método auxiliar para evitar warning de unchecked cast
+    @SuppressWarnings("unchecked")
+    private List<Sapato> getCarrinhoFromSession(HttpSession session) {
+        Object carrinhoObj = session.getAttribute("carrinho");
+        if (carrinhoObj instanceof List<?>) {
+            return (List<Sapato>) carrinhoObj;
+        }
+        return new ArrayList<>();
+    }
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(Model model, @RequestParam(value = "mensagem", required = false) String mensagem) {
         List<Sapato> sapatosList = sapatoService.findAllNotDeleted();
         model.addAttribute("sapatosList", sapatosList);
+
+        if (mensagem != null) {
+            model.addAttribute("mensagem", mensagem);
+        }
+
         return "index";
     }
 
     @GetMapping("/admin")
-    public String admin(Model model) {
+    public String admin(Model model, @RequestParam(value = "mensagem", required = false) String mensagem) {
+        logger.info("Acessando página de administração");
         List<Sapato> allSapatos = sapatoService.findAll();
         model.addAttribute("sapatosList", allSapatos);
+
+        if (mensagem != null) {
+            model.addAttribute("mensagem", mensagem);
+            logger.debug("Mensagem adicionada ao model: {}", mensagem);
+        }
+
         return "admin";
     }
 
     @GetMapping("/cadastro")
     public String cadastro(Model model) {
-        model.addAttribute("sapato", new Sapato());
+        logger.info("Acessando página de cadastro de sapato");
+        Sapato sapato = new Sapato();
+        model.addAttribute("sapato", sapato);
+        logger.debug("Sapato criado e adicionado ao model");
         return "cadastro";
     }
 
     @GetMapping("/editar")
     public String editar(@RequestParam Long id, Model model) {
+        logger.info("Editando sapato com ID: {}", id);
         Sapato sapato = sapatoService.findById(id);
         if (sapato == null) {
+            logger.warn("Sapato não encontrado com ID: {}", id);
             return "redirect:/admin";
         }
         model.addAttribute("sapato", sapato);
-        return "cadastro"; // Reutiliza o mesmo template
+        logger.debug("Sapato encontrado para edição: {}", sapato.getNome());
+        return "cadastro";
     }
 
     @PostMapping("/salvar")
     public String salvar(@Valid @ModelAttribute Sapato sapato, BindingResult result,
                          RedirectAttributes redirectAttributes) {
+
+        logger.info("Tentativa de salvar sapato: {}", sapato.getNome());
+        logger.debug("Dados do sapato - ID: {}, Nome: {}, Marca: {}, Preço: {}",
+                sapato.getId(), sapato.getNome(), sapato.getMarca(), sapato.getPreco());
+
+        // GARANTIR que isDeleted seja null para novos sapatos
+        if (sapato.getId() == null) {
+            sapato.setIsDeleted(null);
+            logger.debug("Novo sapato - isDeleted definido como null");
+        }
+
         if (result.hasErrors()) {
+            logger.warn("Erros de validação encontrados ao salvar sapato");
+
+            // CORRIGIDO: Lambda simplificado conforme resultados da busca
+            result.getAllErrors().forEach(this::logValidationError);
+
             return "cadastro";
         }
 
-        // Selecionar imagem aleatoriamente conforme especificado no PDF
-        if (sapato.getImageUrl() == null || sapato.getImageUrl().isEmpty()) {
-            String[] imagens = {"/images/sapato1.jpg", "/images/sapato2.jpg",
-                    "/images/sapato3.jpg", "/images/sapato4.jpg"};
-            Random random = new Random();
-            sapato.setImageUrl(imagens[random.nextInt(imagens.length)]);
+        try {
+            // Selecionar imagem aleatoriamente conforme Questão 7 do PDF
+            if (sapato.getImageUrl() == null || sapato.getImageUrl().isEmpty()) {
+                String[] imagens = {"/images/sapato1.png", "/images/sapato2.png",
+                        "/images/sapato3.png", "/images/sapato4.png"};
+                Random random = new Random();
+                String imagemSelecionada = imagens[random.nextInt(imagens.length)];
+                sapato.setImageUrl(imagemSelecionada);
+                logger.debug("Imagem selecionada aleatoriamente: {}", imagemSelecionada);
+            }
+
+            Sapato sapatoSalvo = sapatoService.save(sapato);
+            logger.info("Sapato salvo com sucesso! ID: {}", sapatoSalvo.getId());
+
+            String mensagem = sapato.getId() != null ?
+                    "Sapato atualizado com sucesso!" : "Sapato cadastrado com sucesso!";
+            redirectAttributes.addFlashAttribute("mensagem", mensagem);
+
+            return "redirect:/admin";
+
+        } catch (Exception e) {
+            logger.error("Erro ao salvar sapato: {}", sapato.getNome(), e);
+            redirectAttributes.addFlashAttribute("erro", "Erro ao salvar sapato: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("sapato", sapato);
+            return "redirect:/cadastro";
         }
+    }
 
-        sapatoService.save(sapato);
-
-        String mensagem = sapato.getId() != null ?
-                "Sapato atualizado com sucesso!" : "Sapato cadastrado com sucesso!";
-        redirectAttributes.addFlashAttribute("mensagem", mensagem);
-
-        return "redirect:/admin";
+    // NOVO: Método auxiliar para logging de erros de validação
+    private void logValidationError(org.springframework.validation.ObjectError error) {
+        logger.error("Erro de validação: {} - Campo: {}",
+                error.getDefaultMessage(),
+                error instanceof org.springframework.validation.FieldError ?
+                        ((org.springframework.validation.FieldError) error).getField() : "global");
     }
 
     @GetMapping("/deletar")
     public String deletar(@RequestParam Long id, RedirectAttributes redirectAttributes) {
-        sapatoService.softDelete(id);
-        redirectAttributes.addFlashAttribute("mensagem", "Sapato removido com sucesso!");
+        logger.info("Tentativa de deletar sapato com ID: {}", id);
+        try {
+            sapatoService.softDelete(id);
+            logger.info("Sapato deletado com sucesso - ID: {}", id);
+            redirectAttributes.addFlashAttribute("mensagem", "Sapato removido com sucesso!");
+        } catch (Exception e) {
+            logger.error("Erro ao deletar sapato com ID: {}", id, e);
+            redirectAttributes.addFlashAttribute("erro", "Erro ao remover sapato");
+        }
         return "redirect:/admin";
     }
 
     @GetMapping("/restaurar")
     public String restaurar(@RequestParam Long id, RedirectAttributes redirectAttributes) {
-        sapatoService.restore(id);
-        redirectAttributes.addFlashAttribute("mensagem", "Sapato restaurado com sucesso!");
+        logger.info("Tentativa de restaurar sapato com ID: {}", id);
+        try {
+            sapatoService.restore(id);
+            logger.info("Sapato restaurado com sucesso - ID: {}", id);
+            redirectAttributes.addFlashAttribute("mensagem", "Sapato restaurado com sucesso!");
+        } catch (Exception e) {
+            logger.error("Erro ao restaurar sapato com ID: {}", id, e);
+            redirectAttributes.addFlashAttribute("erro", "Erro ao restaurar sapato");
+        }
         return "redirect:/admin";
     }
 
+    // Questão 9 - adicionarCarrinho
     @GetMapping("/adicionarCarrinho")
     public String adicionarCarrinho(@RequestParam Long id, HttpSession session) {
+        logger.info("Adicionando sapato ao carrinho - ID: {}", id);
         Sapato sapato = sapatoService.findById(id);
 
         if (sapato != null && sapato.getIsDeleted() == null) {
-            // Recuperar carrinho da sessão ou criar novo
-            List<Sapato> carrinho = (List<Sapato>) session.getAttribute("carrinho");
-            if (carrinho == null) {
-                carrinho = new ArrayList<>();
-            }
-
-            // Adicionar sapato ao carrinho
+            List<Sapato> carrinho = getCarrinhoFromSession(session);
             carrinho.add(sapato);
             session.setAttribute("carrinho", carrinho);
+            logger.debug("Sapato adicionado ao carrinho. Total de itens: {}", carrinho.size());
+        } else {
+            logger.warn("Sapato não encontrado ou deletado - ID: {}", id);
         }
 
         return "redirect:/";
     }
 
+    // Questão 10 - verCarrinho
     @GetMapping("/verCarrinho")
     public String verCarrinho(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        List<Sapato> carrinho = (List<Sapato>) session.getAttribute("carrinho");
+        logger.info("Visualizando carrinho");
+        List<Sapato> carrinho = getCarrinhoFromSession(session);
+        logger.debug("Itens no carrinho: {}", carrinho.size());
 
-        if (carrinho == null || carrinho.isEmpty()) {
+        if (carrinho.isEmpty()) {
             redirectAttributes.addFlashAttribute("mensagem", "Não existem itens no carrinho");
             return "redirect:/";
         }
 
-        // Calcular total do carrinho
         double total = carrinho.stream()
                 .mapToDouble(sapato -> sapato.getPreco().doubleValue())
                 .sum();
 
+        logger.debug("Total do carrinho: R$ {}", total);
         model.addAttribute("carrinho", carrinho);
         model.addAttribute("total", total);
         return "carrinho";
     }
 
+    // Questão 11 - finalizarCompra
     @GetMapping("/finalizarCompra")
     public String finalizarCompra(HttpSession session, RedirectAttributes redirectAttributes) {
-        // Invalidar a sessão conforme especificado no PDF
+        logger.info("Finalizando compra");
         session.invalidate();
+        logger.info("Sessão invalidada com sucesso - compra finalizada");
 
         redirectAttributes.addFlashAttribute("mensagem", "Compra finalizada com sucesso! Obrigado pela preferência.");
         return "redirect:/";
     }
-
-
 }

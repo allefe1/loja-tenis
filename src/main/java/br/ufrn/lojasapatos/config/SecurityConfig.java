@@ -8,16 +8,46 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // REMOVER @Autowired e configureGlobal que causam dependência circular
-
     @Bean
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
+        return new AuthenticationSuccessHandler() {
+            @Override
+            public void onAuthenticationSuccess(HttpServletRequest request,
+                                                HttpServletResponse response,
+                                                Authentication authentication)
+                    throws IOException, ServletException {
+
+                Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+
+                // Redirecionamento baseado em roles conforme Questão 12 do PDF
+                if (roles.contains("ROLE_ADMIN")) {
+                    response.sendRedirect("/admin");  // Admin vai para painel administrativo
+                } else if (roles.contains("ROLE_USER")) {
+                    response.sendRedirect("/");       // User comum vai para home
+                } else {
+                    response.sendRedirect("/");       // Fallback para home
+                }
+            }
+        };
     }
 
     @Bean
@@ -38,7 +68,7 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/", true)
+                        .successHandler(customAuthenticationSuccessHandler())  // ← MUDANÇA PRINCIPAL
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
