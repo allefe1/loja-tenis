@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Cadastro de Usuário - Loja de Sapatos</title>
+
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <!-- FontAwesome CDN - versão 5.15.4 conforme resultados da busca -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+          integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <!-- Custom stylesheet -->
+    <link type="text/css" rel="stylesheet" th:href="@{/css/style.css}"/>
+
+    <!-- CSS para footer fixo -->
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .main-content {
+            flex-grow: 1;
+        }
+
+        .footer-fixed {
+            background-color: #15161D;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: auto;
+        }
+    </style>
+</head>
+
+<body>
+<div class="main-content">
+    <!-- HEADER SIMPLIFICADO APENAS PARA CADASTRO -->
+    <header>
+        <div id="header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <h2 style="color: #D10024; margin: 20px 0;">SapatoShop - Cadastro</h2>
+                        <p style="color: #666;">Crie sua conta para começar a comprar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION -->
+    <div class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3">
+                    <div class="billing-details">
+                        <div class="section-title text-center">
+                            <h3 class="title">Cadastro de Usuário</h3>
+                            <p>Preencha os dados abaixo para criar sua conta</p>
+                        </div>
+
+                        <!-- Formulário de cadastro conforme Questão 12 -->
+                        <form th:action="@{/salvarUsuario}" th:object="${usuario}" method="post">
+                            <div class="form-group">
+                                <label>Username *</label>
+                                <input class="input form-control" type="text" th:field="*{username}"
+                                       placeholder="Digite um username único (mínimo 3 caracteres)">
+                                <span th:if="${#fields.hasErrors('username')}"
+                                      th:errors="*{username}" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Senha *</label>
+                                <input class="input form-control" type="password" th:field="*{password}"
+                                       placeholder="Digite uma senha (mínimo 6 caracteres)">
+                                <span th:if="${#fields.hasErrors('password')}"
+                                      th:errors="*{password}" class="text-danger"></span>
+                            </div>
+
+                            <!-- Checkbox para admin conforme especificado no PDF -->
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label style="font-weight: normal;">
+                                        <input type="checkbox" th:field="*{admin}">
+                                        <strong>Usuário Administrador</strong>
+                                    </label>
+                                </div>
+                                <small class="help-block">
+                                    <i class="fa fa-info-circle"></i>
+                                    Marque esta opção se o usuário deve ter privilégios de administrador
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="primary-btn order-submit">
+                                    <i class="fa fa-user-plus"></i> Cadastrar Usuário
+                                </button>
+                                <a th:href="@{/login}" class="btn btn-default">
+                                    <i class="fa fa-arrow-left"></i> Voltar ao Login
+                                </a>
+                            </div>
+                        </form>
+
+                        <div class="alert alert-info" style="margin-top: 20px;">
+                            <h4><i class="fa fa-info-circle"></i> Tipos de Usuário:</h4>
+                            <p><strong>Usuário Normal:</strong> Pode adicionar itens ao carrinho e finalizar compras</p>
+                            <p><strong>Administrador:</strong> Pode gerenciar produtos (cadastrar, editar, deletar) + funcionalidades de usuário normal</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /SECTION -->
+</div>
+
+<!-- FOOTER FIXO NO FINAL -->
+<footer class="footer-fixed">
+    <div class="container">
+        <p>&copy; 2025 Loja de Sapatos UFRN. Todos os direitos reservados.</p>
+        <p><small>Projeto da disciplina Programação Web</small></p>
+    </div>
+</footer>
+
+<!-- jQuery Plugins -->
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+</body>
+</html>
