@@ -1,7 +1,5 @@
-
-
 services:
-  # Serviço PostgreSQL
+  # Serviço PostgreSQL para desenvolvimento
   db:
     image: postgres:15-alpine
     container_name: loja_sapatos_db
@@ -16,17 +14,15 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: always
 
-  # Serviço Spring Boot
+  # Serviço Spring Boot para desenvolvimento
   app:
     build: .
     container_name: loja_sapatos_app
     environment:
-      # Sobrescrever configurações para Docker conforme resultados da busca
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/loja_sapatos
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: senha123
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      DATABASE_URL: jdbc:postgresql://db:5432/loja_sapatos
+      DB_USERNAME: postgres
+      DB_PASSWORD: senha123
+      PORT: 8080
     ports:
       - "8080:8080"
     depends_on:
