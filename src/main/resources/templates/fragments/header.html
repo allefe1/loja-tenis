@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="pt-br">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Loja de Sapatos - UFRN</title>
 
     <!-- Google font -->
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
@@ -11,7 +14,7 @@
     <!-- Bootstrap -->
     <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
 
-    <!-- FontAwesome CDN - versão 5.15.4 conforme resultados da busca -->
+    <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
           integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
           crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -22,6 +25,7 @@
 <body>
 
 <div th:fragment="header">
+
     <!-- HEADER -->
     <header>
         <!-- TOP HEADER -->
@@ -34,7 +38,29 @@
                 </ul>
                 <ul class="header-links pull-right">
                     <li><a href="#"><i class="fa fa-dollar"></i> BRL</a></li>
-                    <li><a th:href="@{/login}"><i class="fa fa-sign-in"></i> Login</a></li>
+
+                    <!-- Links para usuários NÃO logados conforme Questão 12 - VERSÃO CORRIGIDA -->
+                    <th:block sec:authorize="!isAuthenticated()">
+                        <li><a th:href="@{/login}"><i class="fa fa-sign-in"></i> Login</a></li>
+                        <li><a th:href="@{/cadUsuario}"><i class="fa fa-user-plus"></i> Cadastrar</a></li>
+                    </th:block>
+
+                    <!-- Username e logout para usuários logados conforme Questão 12 - VERSÃO CORRIGIDA -->
+                    <th:block sec:authorize="isAuthenticated()">
+                        <li>
+                            <span style="color: white; padding: 10px;">
+                                <i class="fa fa-user"></i>
+                                Olá, <span sec:authentication="name">Username</span>
+                            </span>
+                        </li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" style="display: inline;">
+                                <button type="submit" style="background: none; border: none; color: #D10024; cursor: pointer; padding: 10px;">
+                                    <i class="fa fa-sign-out"></i> Logout
+                                </button>
+                            </form>
+                        </li>
+                    </th:block>
                 </ul>
             </div>
         </div>
@@ -99,16 +125,24 @@
                             <i class="fa fa-home"></i> Home
                         </a>
                     </li>
-                    <li>
-                        <a th:href="@{/admin}">
-                            <i class="fa fa-cogs"></i> Administração
-                        </a>
-                    </li>
-                    <li>
-                        <a th:href="@{/cadUsuario}">
-                            <i class="fa fa-user-plus"></i> Cadastrar
-                        </a>
-                    </li>
+
+                    <!-- Link admin apenas para ROLE_ADMIN conforme Questão 12 - VERSÃO CORRIGIDA -->
+                    <th:block sec:authorize="hasRole('ADMIN')">
+                        <li>
+                            <a th:href="@{/admin}">
+                                <i class="fa fa-cogs"></i> Administração
+                            </a>
+                        </li>
+                    </th:block>
+
+                    <!-- Link cadastrar apenas para usuários não logados - VERSÃO CORRIGIDA -->
+                    <th:block sec:authorize="!isAuthenticated()">
+                        <li>
+                            <a th:href="@{/cadUsuario}">
+                                <i class="fa fa-user-plus"></i> Cadastrar
+                            </a>
+                        </li>
+                    </th:block>
                 </ul>
             </div>
         </div>

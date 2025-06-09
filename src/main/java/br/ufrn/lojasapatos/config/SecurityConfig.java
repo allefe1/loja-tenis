@@ -1,6 +1,8 @@
 package br.ufrn.lojasapatos.config;
 
 import br.ufrn.lojasapatos.service.UsuarioService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 
@@ -21,6 +24,8 @@ import java.util.Set;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -38,46 +43,83 @@ public class SecurityConfig {
 
                 Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
 
+                // Logs de debug detalhados
+                logger.info("LOGIN REALIZADO COM SUCESSO!");
+                logger.info("Usuario: {}", authentication.getName());
+                logger.info("Roles: {}", roles);
+                logger.info("Principal: {}", authentication.getPrincipal().getClass().getSimpleName());
+                logger.info("Authenticated: {}", authentication.isAuthenticated());
+
                 // Redirecionamento baseado em roles conforme Questão 12 do PDF
                 if (roles.contains("ROLE_ADMIN")) {
-                    response.sendRedirect("/admin");  // Admin vai para painel administrativo
+                    logger.info("Redirecionando ADMIN para /admin");
+                    response.sendRedirect("/admin");
                 } else if (roles.contains("ROLE_USER")) {
-                    response.sendRedirect("/");       // User comum vai para home
+                    logger.info("Redirecionando USER para /");
+                    response.sendRedirect("/");
                 } else {
-                    response.sendRedirect("/");       // Fallback para home
+                    logger.info("Redirecionando para / (fallback) - Roles: {}", roles);
+                    response.sendRedirect("/");
                 }
             }
         };
     }
 
     @Bean
+    public AuthenticationFailureHandler customAuthenticationFailureHandler() {
+        return (request, response, exception) -> {
+            logger.error("FALHA NO LOGIN: {}", exception.getMessage());
+            logger.error("Username tentado: {}", request.getParameter("username"));
+            response.sendRedirect("/login?error=true");
+        };
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        logger.info("Configurando Spring Security...");
+
         http
-                .authorizeHttpRequests(authz -> authz
-                        // Páginas públicas conforme especificado no PDF
-                        .requestMatchers("/", "/login", "/cadUsuario", "/salvarUsuario").permitAll()
-                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                .authorizeHttpRequests(authz -> {
+                    logger.info("Configurando autorizacao de requisicoes...");
+                    authz
+                            // Páginas públicas conforme especificado no PDF
+                            .requestMatchers("/", "/login", "/cadUsuario", "/salvarUsuario").permitAll()
+                            .requestMatchers("/css/**", "/js/**", "/images/**", "/fonts/**").permitAll()
 
-                        // Apenas ROLE_ADMIN conforme Questão 12
-                        .requestMatchers("/admin", "/cadastro", "/salvar", "/editar", "/deletar", "/restaurar").hasRole("ADMIN")
+                            // Apenas ROLE_ADMIN conforme Questão 12
+                            .requestMatchers("/admin", "/cadastro", "/salvar", "/editar", "/deletar", "/restaurar").hasRole("ADMIN")
 
-                        // Apenas ROLE_USER conforme Questão 12
-                        .requestMatchers("/verCarrinho", "/adicionarCarrinho", "/finalizarCompra").hasRole("USER")
+                            // ROLE_USER OU ROLE_ADMIN podem acessar carrinho conforme Questão 12
+                            .requestMatchers("/verCarrinho", "/adicionarCarrinho", "/finalizarCompra").hasAnyRole("USER", "ADMIN")
 
-                        .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .successHandler(customAuthenticationSuccessHandler())  // ← MUDANÇA PRINCIPAL
-                        .failureUrl("/login?error=true")
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
-                        .permitAll()
-                );
+                            // Qualquer usuário autenticado pode acessar outras páginas
+                            .anyRequest().hasAnyRole("USER", "ADMIN");
+                })
+                .formLogin(form -> {
+                    logger.info("Configurando form login...");
+                    form
+                            .loginPage("/login")
+                            .successHandler(customAuthenticationSuccessHandler())
+                            .failureHandler(customAuthenticationFailureHandler())
+                            .permitAll();
+                })
+                .logout(logout -> {
+                    logger.info("Configurando logout...");
+                    logout
+                            .logoutUrl("/logout")
+                            .logoutSuccessUrl("/")
+                            .invalidateHttpSession(true)
+                            .deleteCookies("JSESSIONID")
+                            .permitAll();
+                })
+                .sessionManagement(session -> {
+                    logger.info("Configurando gerenciamento de sessao...");
+                    session
+                            .maximumSessions(1)
+                            .maxSessionsPreventsLogin(false);
+                });
 
+        logger.info("Spring Security configurado com sucesso!");
         return http.build();
     }
 }
