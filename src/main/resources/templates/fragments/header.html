@@ -25,7 +25,6 @@
 <body>
 
 <div th:fragment="header">
-
     <!-- HEADER -->
     <header>
         <!-- TOP HEADER -->
@@ -39,13 +38,13 @@
                 <ul class="header-links pull-right">
                     <li><a href="#"><i class="fa fa-dollar"></i> BRL</a></li>
 
-                    <!-- Links para usuários NÃO logados conforme Questão 12 - VERSÃO CORRIGIDA -->
+                    <!-- Links para usuários NÃO logados conforme Questão 12 -->
                     <th:block sec:authorize="!isAuthenticated()">
                         <li><a th:href="@{/login}"><i class="fa fa-sign-in"></i> Login</a></li>
                         <li><a th:href="@{/cadUsuario}"><i class="fa fa-user-plus"></i> Cadastrar</a></li>
                     </th:block>
 
-                    <!-- Username e logout para usuários logados conforme Questão 12 - VERSÃO CORRIGIDA -->
+                    <!-- Username e logout para usuários logados conforme Questão 12 -->
                     <th:block sec:authorize="isAuthenticated()">
                         <li>
                             <span style="color: white; padding: 10px;">
@@ -115,29 +114,30 @@
     </header>
     <!-- /HEADER -->
 
-    <!-- NAVIGATION -->
+    <!-- NAVIGATION COM CONTROLE DE ABAS ATIVAS -->
     <nav id="navigation">
         <div class="container">
             <div id="responsive-nav">
                 <ul class="main-nav nav navbar-nav">
-                    <li class="active">
+                    <!-- Home - ativo baseado na página atual -->
+                    <li th:classappend="${currentPage == 'home' ? 'active' : ''}">
                         <a th:href="@{/}">
                             <i class="fa fa-home"></i> Home
                         </a>
                     </li>
 
-                    <!-- Link admin apenas para ROLE_ADMIN conforme Questão 12 - VERSÃO CORRIGIDA -->
+                    <!-- Admin - ativo baseado na página atual -->
                     <th:block sec:authorize="hasRole('ADMIN')">
-                        <li>
+                        <li th:classappend="${currentPage == 'admin' ? 'active' : ''}">
                             <a th:href="@{/admin}">
                                 <i class="fa fa-cogs"></i> Administração
                             </a>
                         </li>
                     </th:block>
 
-                    <!-- Link cadastrar apenas para usuários não logados - VERSÃO CORRIGIDA -->
+                    <!-- Cadastrar - apenas para usuários não logados -->
                     <th:block sec:authorize="!isAuthenticated()">
-                        <li>
+                        <li th:classappend="${currentPage == 'cadastro' ? 'active' : ''}">
                             <a th:href="@{/cadUsuario}">
                                 <i class="fa fa-user-plus"></i> Cadastrar
                             </a>

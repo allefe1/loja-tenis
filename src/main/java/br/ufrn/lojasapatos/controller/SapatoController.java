@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.security.core.Authentication;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Random;
@@ -50,6 +51,7 @@ public class SapatoController {
     public String index(Model model, @RequestParam(value = "mensagem", required = false) String mensagem) {
         List<Sapato> sapatosList = sapatoService.findAllNotDeleted();
         model.addAttribute("sapatosList", sapatosList);
+        model.addAttribute("currentPage", "home");
 
         if (mensagem != null) {
             model.addAttribute("mensagem", mensagem);
@@ -63,6 +65,7 @@ public class SapatoController {
         logger.info("Acessando página de administração");
         List<Sapato> allSapatos = sapatoService.findAll();
         model.addAttribute("sapatosList", allSapatos);
+        model.addAttribute("currentPage", "admin");
 
         if (mensagem != null) {
             model.addAttribute("mensagem", mensagem);
@@ -77,6 +80,7 @@ public class SapatoController {
         logger.info("Acessando página de cadastro de sapato");
         Sapato sapato = new Sapato();
         model.addAttribute("sapato", sapato);
+        model.addAttribute("currentPage", "cadastro");
         logger.debug("Sapato criado e adicionado ao model");
         return "cadastro";
     }
@@ -90,6 +94,7 @@ public class SapatoController {
             return "redirect:/admin";
         }
         model.addAttribute("sapato", sapato);
+        model.addAttribute("currentPage", "editar");
         logger.debug("Sapato encontrado para edição: {}", sapato.getNome());
         return "cadastro";
     }
@@ -110,10 +115,7 @@ public class SapatoController {
 
         if (result.hasErrors()) {
             logger.warn("Erros de validação encontrados ao salvar sapato");
-
-            // CORRIGIDO: Lambda simplificado conforme resultados da busca
             result.getAllErrors().forEach(this::logValidationError);
-
             return "cadastro";
         }
 
@@ -145,7 +147,7 @@ public class SapatoController {
         }
     }
 
-    // NOVO: Método auxiliar para logging de erros de validação
+    // Método auxiliar para logging de erros de validação
     private void logValidationError(org.springframework.validation.ObjectError error) {
         logger.error("Erro de validação: {} - Campo: {}",
                 error.getDefaultMessage(),
@@ -181,10 +183,18 @@ public class SapatoController {
         return "redirect:/admin";
     }
 
-    // Questão 9 - adicionarCarrinho
+    // Questão 9 - adicionarCarrinho (CORRIGIDO conforme Questão 12)
     @GetMapping("/adicionarCarrinho")
-    public String adicionarCarrinho(@RequestParam Long id, HttpSession session) {
-        logger.info("Adicionando sapato ao carrinho - ID: {}", id);
+    public String adicionarCarrinho(@RequestParam Long id, HttpSession session,
+                                    Authentication authentication, RedirectAttributes redirectAttributes) {
+
+        // Verificação adicional conforme Questão 12
+        if (authentication == null || !authentication.isAuthenticated()) {
+            redirectAttributes.addFlashAttribute("erro", "Você precisa estar logado para adicionar itens ao carrinho.");
+            return "redirect:/login";
+        }
+
+        logger.info("Adicionando sapato ao carrinho - ID: {} - Usuário: {}", id, authentication.getName());
         Sapato sapato = sapatoService.findById(id);
 
         if (sapato != null && sapato.getIsDeleted() == null) {
@@ -199,10 +209,18 @@ public class SapatoController {
         return "redirect:/";
     }
 
-    // Questão 10 - verCarrinho
+    // Questão 10 - verCarrinho (CORRIGIDO conforme Questão 12)
     @GetMapping("/verCarrinho")
-    public String verCarrinho(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        logger.info("Visualizando carrinho");
+    public String verCarrinho(HttpSession session, Model model, Authentication authentication,
+                              RedirectAttributes redirectAttributes) {
+
+        // Verificação adicional conforme Questão 12
+        if (authentication == null || !authentication.isAuthenticated()) {
+            redirectAttributes.addFlashAttribute("erro", "Você precisa estar logado para ver o carrinho.");
+            return "redirect:/login";
+        }
+
+        logger.info("Visualizando carrinho - Usuário: {}", authentication.getName());
         List<Sapato> carrinho = getCarrinhoFromSession(session);
         logger.debug("Itens no carrinho: {}", carrinho.size());
 
@@ -218,15 +236,26 @@ public class SapatoController {
         logger.debug("Total do carrinho: R$ {}", total);
         model.addAttribute("carrinho", carrinho);
         model.addAttribute("total", total);
+        model.addAttribute("currentPage", "carrinho");
         return "carrinho";
     }
 
-    // Questão 11 - finalizarCompra
+    // Questão 11 - finalizarCompra (CORRIGIDO conforme Questão 12)
     @GetMapping("/finalizarCompra")
-    public String finalizarCompra(HttpSession session, RedirectAttributes redirectAttributes) {
-        logger.info("Finalizando compra");
-        session.invalidate();
-        logger.info("Sessão invalidada com sucesso - compra finalizada");
+    public String finalizarCompra(HttpSession session, Authentication authentication,
+                                  RedirectAttributes redirectAttributes) {
+
+        // Verificação adicional conforme Questão 12
+        if (authentication == null || !authentication.isAuthenticated()) {
+            redirectAttributes.addFlashAttribute("erro", "Você precisa estar logado para finalizar a compra.");
+            return "redirect:/login";
+        }
+
+        logger.info("Finalizando compra - Usuário: {}", authentication.getName());
+
+        // CORRIGIDO: Remover apenas o carrinho, não toda a sessão
+        session.removeAttribute("carrinho");
+        logger.info("Carrinho limpo com sucesso - compra finalizada para usuário: {}", authentication.getName());
 
         redirectAttributes.addFlashAttribute("mensagem", "Compra finalizada com sucesso! Obrigado pela preferência.");
         return "redirect:/";

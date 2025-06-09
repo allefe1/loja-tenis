@@ -89,11 +89,11 @@ public class SecurityConfig {
                             // Apenas ROLE_ADMIN conforme Questão 12
                             .requestMatchers("/admin", "/cadastro", "/salvar", "/editar", "/deletar", "/restaurar").hasRole("ADMIN")
 
-                            // ROLE_USER OU ROLE_ADMIN podem acessar carrinho conforme Questão 12
-                            .requestMatchers("/verCarrinho", "/adicionarCarrinho", "/finalizarCompra").hasAnyRole("USER", "ADMIN")
+                            // CORRIGIDO: Apenas usuários autenticados conforme Questão 12
+                            .requestMatchers("/verCarrinho", "/adicionarCarrinho", "/finalizarCompra").authenticated()
 
                             // Qualquer usuário autenticado pode acessar outras páginas
-                            .anyRequest().hasAnyRole("USER", "ADMIN");
+                            .anyRequest().authenticated();
                 })
                 .formLogin(form -> {
                     logger.info("Configurando form login...");
