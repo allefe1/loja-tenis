@@ -1,3 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <!-- FontAwesome CDN - versão 5.15.4 conforme resultados da busca -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+          integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <!-- Custom stylesheet -->
+    <link type="text/css" rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
 <div th:fragment="header">
     <!-- HEADER -->
     <header>
@@ -25,7 +48,9 @@
                     <div class="col-md-3">
                         <div class="header-logo">
                             <a href="/" class="logo">
-                                <h2 style="color: #D10024; margin: 0; font-weight: bold;">SapatoShop</h2>
+                                <h2 style="color: #D10024; margin: 0; font-weight: bold;">
+                                    <i class="fa fa-shopping-bag"></i> SapatoShop
+                                </h2>
                             </a>
                         </div>
                     </div>
@@ -34,17 +59,21 @@
                     <!-- ESPAÇO CENTRAL -->
                     <div class="col-md-6">
                         <div class="header-search" style="text-align: center; padding-top: 20px;">
-                            <h4 style="color: #2B2D42; margin: 0;">Os Melhores Sapatos do Brasil</h4>
-                            <p style="color: #666; margin: 5px 0 0 0;">Qualidade e conforto em cada passo</p>
+                            <h4 style="color: #2B2D42; margin: 0;">
+                                <i class="fa fa-star"></i> Os Melhores Sapatos do Brasil <i class="fa fa-star"></i>
+                            </h4>
+                            <p style="color: #666; margin: 5px 0 0 0;">
+                                <i class="fa fa-heart"></i> Qualidade e conforto em cada passo
+                            </p>
                         </div>
                     </div>
                     <!-- /ESPAÇO CENTRAL -->
 
-                    <!-- CART -->
+                    <!-- CART conforme Questão 3 do PDF -->
                     <div class="col-md-3 clearfix">
                         <div class="header-ctn">
                             <div>
-                                <a th:href="@{/verCarrinho}">
+                                <a th:href="@{/verCarrinho}" class="cart-link">
                                     <i class="fa fa-shopping-cart"></i>
                                     <span>Carrinho</span>
                                     <div class="qty" th:text="${session.carrinho != null ? session.carrinho.size() : 0}">0</div>
@@ -65,12 +94,27 @@
         <div class="container">
             <div id="responsive-nav">
                 <ul class="main-nav nav navbar-nav">
-                    <li class="active"><a th:href="@{/}">Home</a></li>
-                    <li><a th:href="@{/admin}">Administração</a></li>
-                    <li><a th:href="@{/cadUsuario}">Cadastrar</a></li>
+                    <li class="active">
+                        <a th:href="@{/}">
+                            <i class="fa fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/admin}">
+                            <i class="fa fa-cogs"></i> Administração
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/cadUsuario}">
+                            <i class="fa fa-user-plus"></i> Cadastrar
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
     <!-- /NAVIGATION -->
 </div>
+
+</body>
+</html>
