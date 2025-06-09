@@ -5,7 +5,7 @@ services:
     container_name: loja_sapatos_db
     environment:
       POSTGRES_DB: loja_sapatos
-      POSTGRES_USER: postgres
+      POSTGRES_USER: loja_sapatos_user
       POSTGRES_PASSWORD: senha123
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
@@ -19,9 +19,11 @@ services:
     build: .
     container_name: loja_sapatos_app
     environment:
-      DATABASE_URL: jdbc:postgresql://db:5432/loja_sapatos
-      DB_USERNAME: postgres
-      DB_PASSWORD: senha123
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: loja_sapatos
+      DATABASE_USERNAME: loja_sapatos_user
+      DATABASE_PASSWORD: senha123
       PORT: 8080
     ports:
       - "8080:8080"

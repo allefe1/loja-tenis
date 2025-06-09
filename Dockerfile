@@ -1,18 +1,30 @@
-# Usar OpenJDK 21 slim para menor tamanho
-FROM openjdk:21-jdk-slim
-
-# Definir diretório de trabalho
+# Etapa de build: usa o OpenJDK 21 para compilar o projeto com Maven Wrapper
+FROM openjdk:21-jdk AS build
 WORKDIR /app
 
-# Copiar o JAR da aplicação
-COPY target/*.jar app.jar
+# Copiar arquivos de configuração do Maven
+COPY pom.xml .
+COPY src src
+COPY mvnw .
+COPY .mvn .mvn
 
-# Expor a porta que o Render espera
-EXPOSE 10000
+# Dar permissão de execução ao mvnw
+RUN chmod +x ./mvnw
 
-# Configurar variáveis de ambiente padrão
-ENV SPRING_PROFILES_ACTIVE=prod
-ENV SERVER_PORT=10000
+# Compilar o projeto usando Maven Wrapper
+RUN ./mvnw clean package -DskipTests
 
-# Comando para executar a aplicação
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Etapa final: cria a imagem definitiva com JRE slim
+FROM openjdk:21-jdk-slim
+
+# Criar volume temporário
+VOLUME /tmp
+
+# Copiar o JAR compilado da etapa de build
+COPY --from=build /app/target/*.jar app.jar
+
+# Definir o ponto de entrada da aplicação
+ENTRYPOINT ["java", "-jar", "/app.jar"]
+
+# Expor a porta 8080 (padrão do Spring Boot)
+EXPOSE 8080
