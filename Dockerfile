@@ -1,20 +1,20 @@
-# Etapa de build: usa o OpenJDK 21 para compilar o projeto com Maven Wrapper
-FROM openjdk:21-jdk AS build
+# Etapa de build: usa Maven oficial para compilar
+FROM maven:3.9.4-openjdk-21-slim AS build
 WORKDIR /app
 
-# Copiar arquivos de configuração do Maven
+# Copiar pom.xml primeiro para cache de dependências
 COPY pom.xml .
-COPY src src
-COPY mvnw .
-COPY .mvn .mvn
 
-# Dar permissão de execução ao mvnw
-RUN chmod +x ./mvnw
+# Baixar dependências (cache layer)
+RUN mvn dependency:go-offline -B
 
-# Compilar o projeto usando Maven Wrapper
-RUN ./mvnw clean package -DskipTests
+# Copiar código fonte
+COPY src ./src
 
-# Etapa final: cria a imagem definitiva com JRE slim
+# Compilar aplicação
+RUN mvn clean package -DskipTests -B
+
+# Etapa final: cria a imagem definitiva
 FROM openjdk:21-jdk-slim
 
 # Criar volume temporário
@@ -26,5 +26,5 @@ COPY --from=build /app/target/*.jar app.jar
 # Definir o ponto de entrada da aplicação
 ENTRYPOINT ["java", "-jar", "/app.jar"]
 
-# Expor a porta 8080 (padrão do Spring Boot)
+# Expor a porta 8080
 EXPOSE 8080
