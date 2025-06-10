@@ -51,7 +51,7 @@ public class Sapato {
     @Temporal(TemporalType.TIMESTAMP)
     private Date isDeleted;
 
-    // Construtores
+    
     public Sapato() {}
 
     public Sapato(String nome, String marca, BigDecimal preco, String cor, Integer tamanho, String descricao) {
@@ -63,7 +63,7 @@ public class Sapato {
         this.descricao = descricao;
     }
 
-    // Getters e Setters
+    
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
