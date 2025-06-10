@@ -1,5 +1,5 @@
-# Etapa de build: usa Maven oficial para compilar
-FROM maven:3.9.4-openjdk-21-slim AS build
+# Etapa de build: usa Maven oficial com Eclipse Temurin OpenJDK 21 para compilar
+FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
 # Copiar pom.xml primeiro para cache de dependências
