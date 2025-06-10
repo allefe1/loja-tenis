@@ -7,21 +7,21 @@
 
     <title>Login - Loja de Sapatos</title>
 
-    <!-- Google font -->
+    
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
 
-    <!-- Bootstrap -->
+    
     <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
 
-    <!-- FontAwesome CDN -->
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
           integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
           crossorigin="anonymous" referrerpolicy="no-referrer">
 
-    <!-- Custom stylesheet -->
+    
     <link type="text/css" rel="stylesheet" th:href="@{/css/style.css}"/>
 
-    <!-- CSS para footer fixo -->
+    
     <style>
         body {
             display: flex;
@@ -45,7 +45,7 @@
 </head>
 <body>
 <div class="main-content">
-    <!-- HEADER SIMPLIFICADO -->
+    <!-- HEADER SIMPLIFICADO apenas para o login -->
     <header>
         <div id="header">
             <div class="container">
@@ -58,7 +58,7 @@
         </div>
     </header>
 
-    <!-- Mensagem de sucesso conforme especificado no PDF -->
+    
     <div th:if="${mensagem}" class="section" style="padding: 20px 0;">
         <div class="container">
             <div class="alert alert-success alert-dismissible">
@@ -68,7 +68,7 @@
         </div>
     </div>
 
-    <!-- SECTION -->
+    
     <div class="section">
         <div class="container">
             <div class="row">
@@ -79,7 +79,7 @@
                             <p>Acesse sua conta para continuar comprando</p>
                         </div>
 
-                        <!-- Erro de login conforme especificado no PDF -->
+                        <!-- Erro de login como pedido no PDF -->
                         <div th:if="${error}" class="alert alert-danger">
                             <i class="fa fa-exclamation-triangle"></i>
                             <span th:text="${error}"></span>
@@ -118,10 +118,10 @@
             </div>
         </div>
     </div>
-    <!-- /SECTION -->
+    
 </div>
 
-<!-- FOOTER FIXO NO FINAL -->
+<!-- FOOTER FIXO NO FINAL apenas para paginia de logim, achei que ficou melhor aqui -->
 <footer class="footer-fixed">
     <div class="container">
         <p>&copy; 2025 Loja de Sapatos UFRN. Todos os direitos reservados.</p>
