@@ -7,18 +7,18 @@
 
     <title>Cadastro de Sapato - Loja de Sapatos</title>
 
-    <!-- Google font -->
+    
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
 
-    <!-- Bootstrap -->
+   
     <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
 
-    <!-- FontAwesome CDN - versão 5.15.4 conforme resultados da busca -->
+  
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
           integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
           crossorigin="anonymous" referrerpolicy="no-referrer">
 
-    <!-- Custom stylesheet -->
+  
     <link type="text/css" rel="stylesheet" th:href="@{/css/style.css}"/>
 
     <style>
@@ -45,7 +45,7 @@
 
 <body>
 <div class="main-content">
-    <!-- HEADER SIMPLIFICADO -->
+  
     <header>
         <div id="header">
             <div class="container">
@@ -58,7 +58,7 @@
         </div>
     </header>
 
-    <!-- SECTION -->
+    
     <div class="section">
         <div class="container">
             <div class="row">
@@ -70,7 +70,7 @@
                     </div>
 
                     <div class="billing-details">
-                        <!-- Formulário conforme Questões 5, 6 e 7 do PDF -->
+                        <!-- Formulário conforme Questões 5, 6 e 7 -->
                         <form th:action="@{/salvar}" th:object="${sapato}" method="post">
                             <input type="hidden" th:field="*{id}">
                             <input type="hidden" th:field="*{isDeleted}">
@@ -145,7 +145,7 @@
     </div>
 </div>
 
-<!-- FOOTER FIXO -->
+<!-- FOOTER FIXO, achei melhor nessa tela de login e cadastro -->
 <footer class="footer-fixed">
     <div class="container">
         <p>&copy; 2025 Loja de Sapatos UFRN. Todos os direitos reservados.</p>
