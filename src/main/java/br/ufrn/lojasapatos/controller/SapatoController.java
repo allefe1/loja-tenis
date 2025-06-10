@@ -31,13 +31,13 @@ public class SapatoController {
         this.sapatoService = sapatoService;
     }
 
-    // SOLUÇÃO: Ignorar campo isDeleted no binding
+    
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.setDisallowedFields("isDeleted");
     }
 
-    // Método auxiliar para evitar warning de unchecked cast
+    
     @SuppressWarnings("unchecked")
     private List<Sapato> getCarrinhoFromSession(HttpSession session) {
         Object carrinhoObj = session.getAttribute("carrinho");
@@ -147,7 +147,7 @@ public class SapatoController {
         }
     }
 
-    // Método auxiliar para logging de erros de validação
+    
     private void logValidationError(org.springframework.validation.ObjectError error) {
         logger.error("Erro de validação: {} - Campo: {}",
                 error.getDefaultMessage(),
@@ -183,7 +183,7 @@ public class SapatoController {
         return "redirect:/admin";
     }
 
-    // Questão 9 - adicionarCarrinho (CORRIGIDO conforme Questão 12)
+    // Questão 9 - adicionarCarrinho 
     @GetMapping("/adicionarCarrinho")
     public String adicionarCarrinho(@RequestParam Long id, HttpSession session,
                                     Authentication authentication, RedirectAttributes redirectAttributes) {
@@ -209,7 +209,7 @@ public class SapatoController {
         return "redirect:/";
     }
 
-    // Questão 10 - verCarrinho (CORRIGIDO conforme Questão 12)
+    // Questão 10 - verCarrinho
     @GetMapping("/verCarrinho")
     public String verCarrinho(HttpSession session, Model model, Authentication authentication,
                               RedirectAttributes redirectAttributes) {
@@ -240,12 +240,12 @@ public class SapatoController {
         return "carrinho";
     }
 
-    // Questão 11 - finalizarCompra (CORRIGIDO conforme Questão 12)
+    // Questão 11 - finalizarCompra 
     @GetMapping("/finalizarCompra")
     public String finalizarCompra(HttpSession session, Authentication authentication,
                                   RedirectAttributes redirectAttributes) {
 
-        // Verificação adicional conforme Questão 12
+        
         if (authentication == null || !authentication.isAuthenticated()) {
             redirectAttributes.addFlashAttribute("erro", "Você precisa estar logado para finalizar a compra.");
             return "redirect:/login";
@@ -253,7 +253,7 @@ public class SapatoController {
 
         logger.info("Finalizando compra - Usuário: {}", authentication.getName());
 
-        // CORRIGIDO: Remover apenas o carrinho, não toda a sessão
+        
         session.removeAttribute("carrinho");
         logger.info("Carrinho limpo com sucesso - compra finalizada para usuário: {}", authentication.getName());
 
