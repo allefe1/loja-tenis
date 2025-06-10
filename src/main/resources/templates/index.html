@@ -7,27 +7,27 @@
 
     <title>Loja de Sapatos - UFRN</title>
 
-    <!-- Google font -->
+    
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
 
-    <!-- Bootstrap -->
+    
     <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
 
-    <!-- FontAwesome CDN -->
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
           integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
           crossorigin="anonymous" referrerpolicy="no-referrer">
 
-    <!-- Custom stylesheet -->
+    
     <link type="text/css" rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 
 <body>
 <div class="main-content">
-    <!-- USAR O FRAGMENT HEADER COM SPRING SECURITY conforme Questão 2 -->
+    <!-- O FRAGMENT HEADER COM SPRING SECURITY conforme Questão 2 -->
     <div th:replace="~{fragments/header :: header}"></div>
 
-    <!-- Mensagem de sucesso/info conforme Questões 7, 8 e 11 -->
+    
     <div th:if="${mensagem}" class="section" style="padding: 20px 0;">
         <div class="container">
             <div class="alert alert-success alert-dismissible">
@@ -37,35 +37,35 @@
         </div>
     </div>
 
-    <!-- SECTION -->
+    
     <div class="section">
         <div class="container">
             <div class="row">
-                <!-- section title -->
+                
                 <div class="col-md-12">
                     <div class="section-title">
                         <h3 class="title">Nossos Sapatos</h3>
-                        <!-- Link para verCarrinho conforme Questão 3 -->
+                        <!-- Link para verCarrinho  Questão 3 -->
                         <div class="section-nav">
                             <a th:href="@{/verCarrinho}" class="btn btn-primary">
                                 <i class="fa fa-shopping-cart"></i>
                                 Ver Carrinho
-                                <!-- Badge com quantidade conforme Questão 3 -->
+                                
                                 <span class="badge" th:text="${session.carrinho != null ? session.carrinho.size() : 0}">0</span>
                             </a>
                         </div>
                     </div>
                 </div>
-                <!-- /section title -->
+               
 
-                <!-- Products conforme Questão 3 -->
+                
                 <div class="col-md-12">
                     <div class="row">
-                        <!-- Listagem conforme Questão 3 - apenas itens não deletados (isDeleted == null) -->
+                        
                         <div th:each="sapato : ${sapatosList}" class="col-md-4 col-xs-6">
                             <div class="product">
                                 <div class="product-img">
-                                    <!-- Exibir imagem conforme Questão 3 -->
+                                    
                                     <img th:src="${sapato.imageUrl}" alt="Sapato" style="width: 100%; height: 250px; object-fit: cover;">
                                     <div class="product-label">
                                         <span class="new">NOVO</span>
@@ -84,7 +84,7 @@
                                         <i class="fa fa-star"></i>
                                         <i class="fa fa-star-o"></i>
                                     </div>
-                                    <!-- Informações adicionais do sapato -->
+                                    
                                     <p><strong>Tamanho:</strong> <span th:text="${sapato.tamanho}">Tamanho</span></p>
                                     <p><strong>Cor:</strong> <span th:text="${sapato.cor}">Cor</span></p>
                                     <p><strong>Descrição:</strong>
@@ -92,7 +92,7 @@
                                     </p>
                                 </div>
                                 <div class="add-to-cart">
-                                    <!-- Link para adicionarCarrinho conforme Questão 3 e 9 -->
+                                    
                                     <a th:href="@{/adicionarCarrinho(id=${sapato.id})}"
                                        class="add-to-cart-btn">
                                         <i class="fa fa-shopping-cart"></i> Adicionar ao Carrinho
@@ -111,7 +111,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- /Products -->
+                
 
                 <!-- Seção de informações adicionais -->
                 <div class="col-md-12" style="margin-top: 50px;">
@@ -148,7 +148,7 @@
             </div>
         </div>
     </div>
-    <!-- /SECTION -->
+   
 </div>
 
 <!-- FOOTER DO TEMPLATE ELECTRO conforme Questão 2 -->
