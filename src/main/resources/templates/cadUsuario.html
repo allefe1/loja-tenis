@@ -7,18 +7,18 @@
 
     <title>Cadastro de Usuário - Loja de Sapatos</title>
 
-    <!-- Google font -->
+    
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
 
-    <!-- Bootstrap -->
+  
     <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
 
-    <!-- FontAwesome CDN - versão 5.15.4 conforme resultados da busca -->
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
           integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
           crossorigin="anonymous" referrerpolicy="no-referrer">
 
-    <!-- Custom stylesheet -->
+    
     <link type="text/css" rel="stylesheet" th:href="@{/css/style.css}"/>
 
     <!-- CSS para footer fixo -->
@@ -60,7 +60,7 @@
         </div>
     </header>
 
-    <!-- SECTION -->
+    
     <div class="section">
         <div class="container">
             <div class="row">
@@ -71,7 +71,7 @@
                             <p>Preencha os dados abaixo para criar sua conta</p>
                         </div>
 
-                        <!-- Formulário de cadastro conforme Questão 12 -->
+                        <!-- Formulário de cadastro  -->
                         <form th:action="@{/salvarUsuario}" th:object="${usuario}" method="post">
                             <div class="form-group">
                                 <label>Username *</label>
@@ -123,7 +123,7 @@
             </div>
         </div>
     </div>
-    <!-- /SECTION -->
+   
 </div>
 
 <!-- FOOTER FIXO NO FINAL -->
